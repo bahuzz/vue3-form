@@ -1,6 +1,6 @@
 <template>
-    <div v-for="account in accounts">
-        <accounts-list-item></accounts-list-item>
+    <div v-for="(account, index) in accounts" :key="index">
+        <accounts-list-item :account :index></accounts-list-item>
     </div>
 </template>
 
