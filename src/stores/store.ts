@@ -27,11 +27,16 @@ export const useStore = defineStore('Store', () => {
         localStorage.setItem('accounts', JSON.stringify(accounts.value))
     }
 
+    function removeAccount(index:number) {
+        accounts.value.splice(index, 1)
+        localStorage.setItem('accounts', JSON.stringify(accounts.value))
+    }
 
     return {
         accounts,
         addAccount,
-        saveAccount
+        saveAccount,
+        removeAccount
     }
 
 })

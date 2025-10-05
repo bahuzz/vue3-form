@@ -2,13 +2,18 @@
     <div class="flex">
         <div class="col flex">
           <div class="col">
-            <n-input
-              v-model="labels"
-              type="text"
-              placeholder="Метки"
-              maxlength="50"
-              @blur="save"
-              />
+            <n-popover trigger="click">
+              <template #trigger>
+                <n-input
+                        v-model:value="labels"
+                        type="text"
+                        placeholder="Метки"
+                        maxlength="50"
+                        @blur="save"
+                        />
+              </template>
+              <span>Для указания нескольких меток используйте разделитель ;</span>
+          </n-popover>
           </div>
           <div class="col">
             <n-select 
@@ -42,13 +47,13 @@
             />
         </div>
         </div>
-        <n-icon size="24" :component="TrashAltRegular" color="#777"></n-icon>
+        <n-icon size="24" :component="TrashAltRegular" color="#777" @click="deleteAccount"></n-icon>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { NInput, NSelect, NIcon, type FormValidationStatus } from 'naive-ui'
+import { NInput, NSelect, NIcon, type FormValidationStatus, NPopover } from 'naive-ui'
 import { TrashAltRegular } from '@vicons/fa'
 import { useStore } from '../stores/store'
 import type { Account, Label } from '../types';
@@ -58,7 +63,7 @@ interface Props {
   index: number
 }
 
-const {account, index} = defineProps<Props>()
+const { account, index } = defineProps<Props>()
 
 const store = useStore()
 
@@ -72,7 +77,8 @@ const options = [
     value: 'ldap'
   } 
 ]
-const labels = ref(account.labels)
+
+const labels = ref(account.labels?.map(item => item.text).toString() || '')
 const loginStatus = ref<FormValidationStatus>('success')
 const passwordStatus = ref<FormValidationStatus>('success')
 const login = ref(account.login)
@@ -88,19 +94,27 @@ const validation = () => {
 }
 
 const save = () => {
-  const labelsArr:Label[] = []
   if(!isLocal.value) password.value = null
-  if(labels.value) {}
+
+  let labelsArr:Label[] = []
+  if(labels.value) {
+   const arr = labels.value.split(';')
+    labelsArr = arr.map(item => {return {text: item}})
+  }
+
   const newAccount:Account = {
     type: accountType.value,
     login: login.value,
     password: password.value,
     labels: labelsArr
   }
-
   if(validation()) {
     store.saveAccount(newAccount, index)
   }
+}
+
+const deleteAccount = () => {
+  store.removeAccount(index)
 }
 </script>
 

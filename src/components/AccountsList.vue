@@ -1,5 +1,5 @@
 <template>
-    <div v-for="(account, index) in accounts" :key="index">
+    <div v-for="(account, index) in accounts" :key="index + account.login + account.password">
         <accounts-list-item :account :index></accounts-list-item>
     </div>
 </template>
@@ -14,7 +14,3 @@ const store = useStore()
 const accounts = computed(() => store.accounts)
 
 </script>
-
-<style scoped>
-
-</style>
